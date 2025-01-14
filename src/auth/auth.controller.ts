@@ -1,14 +1,17 @@
 
-import { Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post, UsePipes, ValidationPipe } from '@nestjs/common';
 import { AuthService } from './auth.service';
+import { Sign } from 'crypto';
+import { SignUpDto } from './dto/sign-up.dto';
 
 @Controller('auth')
 export class AuthController {
     constructor(private readonly authService: AuthService) { }
 
     @Post('sign-up')
-    signUp() {
-        return this.authService.signUp();
+    @UsePipes(new ValidationPipe({ transform: true, whitelist: true, forbidNonWhitelisted: true }))
+    signUp(@Body() body: SignUpDto) {
+        return this.authService.signUp(body);
     }
 
     @Post('sign-in')
