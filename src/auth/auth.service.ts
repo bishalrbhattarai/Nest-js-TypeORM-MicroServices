@@ -18,7 +18,8 @@ export class AuthService {
         body.password = hashedPassword;
 
         const response = await (this.prisma.user.create({ data: body }));
-        delete response.password
+        //    deleted the password key from the response
+        delete response.password;
         return response
     }
 
