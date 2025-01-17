@@ -43,10 +43,15 @@ export class AuthService {
 
     async signIn(body: SignInDto) {
 
-        const user = await this.prisma.user.findUnique({ where: { email: body.email } });
+        try {
+            const user = await this.prisma.user.findUnique({ where: { email: body.email } });
 
 
-        return ""
+
+            return ""
+        } catch (error) {
+
+        }
     }
 
 }
