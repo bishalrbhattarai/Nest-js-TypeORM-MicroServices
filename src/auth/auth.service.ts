@@ -1,8 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { Sign } from 'crypto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { SignUpDto } from './dto/sign-up.dto';
 import * as argon from 'argon2';
+import { SignInDto } from './dto/sign-in.dto';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 
 
@@ -14,17 +16,37 @@ export class AuthService {
 
     async signUp(body: SignUpDto) {
 
-        const hashedPassword = await argon.hash(body.password);
-        body.password = hashedPassword;
+        try {
+            const hashedPassword = await argon.hash(body.password);
+            body.password = hashedPassword;
 
-        const response = await (this.prisma.user.create({ data: body }));
-        //    deleted the password key from the response
-        delete response.password;
-        return response
+            const response = await (this.prisma.user.create({ data: body }));
+            //    deleted the password key from the response
+            delete response.password;
+            return response
+        } catch (error: unknown) {
+            if (error instanceof PrismaClientKnownRequestError) {
+                if (error.code === 'P2002') {
+                    throw new HttpException('Email already exists', HttpStatus.BAD_REQUEST);
+                }
+                else {
+                    throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+                }
+            }
+            else {
+                if (error instanceof Error) {
+                    throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+                }
+            }
+        }
     }
 
-    signIn() {
-        return 'Sign in';
+    async signIn(body: SignInDto) {
+
+        const user = await this.prisma.user.findUnique({ where: { email: body.email } });
+
+
+        return ""
     }
 
 }
