@@ -12,7 +12,8 @@ export class UsersModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(UsersMiddleware).forRoutes(
       { path: 'users', method: RequestMethod.GET },
-      { path: "users", method: RequestMethod.POST }
+      { path: "users", method: RequestMethod.POST },
+      { path: "users/:id", method: RequestMethod.PATCH }
     );
   }
 }
