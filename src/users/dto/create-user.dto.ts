@@ -13,6 +13,6 @@ export class CreateUserDto {
 
     @IsNotEmpty()
     @IsNumber()
-    @Type(() => Number)
+    // @Type(() => Number)
     age: number;
 }

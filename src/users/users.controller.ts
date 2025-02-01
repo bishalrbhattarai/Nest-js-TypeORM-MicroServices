@@ -18,7 +18,7 @@ export class UsersController {
     whitelist: true,
     forbidNonWhitelisted: true,
   }))
-  createUser(@Body(new ParseAgePipe()) body: CreateUserDto) {
+  createUser(@Body("age", ParseIntPipe) age: number, @Body() body: CreateUserDto) {
     return this.usersService.createUser(body);
   }
 }
